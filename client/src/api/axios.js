@@ -3,7 +3,7 @@ import axios from 'axios';
 const isProduction = import.meta.env.PROD;
 
 const API = axios.create({
-  baseURL: isProduction ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api'),
+  baseURL: isProduction ? 'https://etask-production.up.railway.app/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api'),
 });
 
 API.interceptors.request.use((config) => {
