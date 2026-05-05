@@ -3,12 +3,8 @@
   "version": "1.0.0",
   "description": "Project Management Tool",
   "scripts": {
-    "start": "node server/src/server.js",
-    "server": "npm run dev --prefix server",
-    "client": "npm run dev --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "cd client && npm install && npm run build && cd ../server && npm install",
-    "install-all": "cd client && npm install && cd ../server && npm install"
+    "start": "node server/src/server.js"
   },
   "dependencies": {
     "concurrently": "^8.2.2"
