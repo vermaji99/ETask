@@ -34,7 +34,7 @@ app.use('/api/tasks', require('./routes/taskRoutes'));
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../client/dist')));
 
-  app.get('*', (req, res) =>
+  app.get('/*', (req, res) =>
     res.sendFile(path.resolve(__dirname, '../../client', 'dist', 'index.html'))
   );
 } else {
@@ -42,6 +42,14 @@ if (process.env.NODE_ENV === 'production') {
     res.send('API is running...');
   });
 }
+
+// 404 Fallback Route
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'API route not found',
+  });
+});
 
 // Error handler
 app.use(errorHandler);
