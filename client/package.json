@@ -15,7 +15,6 @@
     "axios": "^1.16.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "kiet_task": "file:..",
     "lucide-react": "^1.14.0",
     "postcss": "^8.5.3",
     "react": "^19.2.5",
