@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Project Management Tool",
   "scripts": {
-    "start": "node server/src/index.js",
+    "start": "node server/src/server.js",
     "server": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",

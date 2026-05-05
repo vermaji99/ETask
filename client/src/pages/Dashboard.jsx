@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import API from '../api/axios';
+import { taskService } from '../api/apiService';
 import Layout from '../components/Layout';
 import { 
   ClipboardList, 
@@ -22,7 +22,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await API.get('/tasks/stats');
+        const { data } = await taskService.getStats();
         setStats(data);
       } catch (error) {
         console.error('Failed to fetch stats', error);

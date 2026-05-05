@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import API from '../api/axios';
+import { projectService } from '../api/apiService';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Briefcase, Trash2 } from 'lucide-react';
@@ -15,7 +15,7 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
-      const { data } = await API.get('/projects');
+      const { data } = await projectService.getAll();
       setProjects(data);
     } catch (error) {
       console.error('Failed to fetch projects', error);
@@ -31,7 +31,7 @@ const Projects = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await API.post('/projects', newProject);
+      await projectService.create(newProject);
       setShowModal(false);
       setNewProject({ name: '', description: '' });
       fetchProjects();
@@ -43,7 +43,7 @@ const Projects = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
       try {
-        await API.delete(`/projects/${id}`);
+        await projectService.delete(id);
         fetchProjects();
       } catch (error) {
         console.error('Failed to delete project', error);

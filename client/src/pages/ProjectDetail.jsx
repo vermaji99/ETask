@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import API from '../api/axios';
+import { projectService, taskService, authService } from '../api/apiService';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -35,9 +35,9 @@ const ProjectDetail = () => {
   const fetchData = async () => {
     try {
       const [projRes, tasksRes, membersRes] = await Promise.all([
-        API.get(`/projects/${id}`),
-        API.get(`/tasks/project/${id}`),
-        user.role === 'Admin' ? API.get('/auth/members') : Promise.resolve({ data: [] })
+        projectService.getById(id),
+        taskService.getByProject(id),
+        user.role === 'Admin' ? authService.getMembers() : Promise.resolve({ data: [] })
       ]);
       setProject(projRes.data);
       setTasks(tasksRes.data);
@@ -56,7 +56,7 @@ const ProjectDetail = () => {
   const handleCreateTask = async (e) => {
     e.preventDefault();
     try {
-      await API.post('/tasks', { ...newTask, project: id });
+      await taskService.create({ ...newTask, project: id });
       setShowTaskModal(false);
       setNewTask({ title: '', description: '', deadline: '', assignedTo: '' });
       fetchData();
@@ -67,7 +67,7 @@ const ProjectDetail = () => {
 
   const handleUpdateStatus = async (taskId, status) => {
     try {
-      await API.put(`/tasks/${taskId}`, { status });
+      await taskService.updateStatus(taskId, status);
       fetchData();
     } catch (error) {
       console.error('Failed to update status', error);
@@ -76,7 +76,7 @@ const ProjectDetail = () => {
 
   const handleAddMember = async (userId) => {
     try {
-      await API.put(`/projects/${id}/members`, { userId });
+      await projectService.addMember(id, userId);
       setShowMemberModal(false);
       fetchData();
     } catch (error) {

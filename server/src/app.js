@@ -1,14 +1,9 @@
 const path = require('path');
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
-
-// Load env vars
-dotenv.config();
 
 const app = express();
 
@@ -21,7 +16,7 @@ app.use(cors());
 // Security Headers
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Disable CSP for easier deployment if needed, or configure properly
+    contentSecurityPolicy: false,
   })
 );
 
@@ -37,14 +32,12 @@ app.use('/api/tasks', require('./routes/taskRoutes'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
   app.use(express.static(path.join(__dirname, '../../client/dist')));
 
   app.get('*', (req, res) =>
     res.sendFile(path.resolve(__dirname, '../../client', 'dist', 'index.html'))
   );
 } else {
-  // Root route
   app.get('/', (req, res) => {
     res.send('API is running...');
   });
@@ -53,11 +46,4 @@ if (process.env.NODE_ENV === 'production') {
 // Error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-
-// Connect to database then start server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  });
-});
+module.exports = app;

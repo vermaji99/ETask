@@ -1,71 +1,96 @@
-# TaskMaster - Project Management Tool
+# TaskMaster - Production Ready Project Management Tool
 
-TaskMaster is a full-stack project management application that allows users to create projects, manage team members, and track tasks with role-based access control (Admin/Member).
+TaskMaster is a high-performance, scalable MERN stack application built with a production-level architecture.
 
-🚀 **[Live Demo](https://your-railway-url.railway.app)** (Replace with actual URL after deployment)
+🚀 **[Live Demo](https://your-railway-url.railway.app)**
 
-## 🌟 Key Features
+## 🏗️ Architecture Overview
 
-- **Authentication**: Secure Signup and Login with JWT.
-- **Role-Based Access Control**:
-  - **Admin**: Create projects, add/remove team members, create and assign tasks.
-  - **Member**: View projects they belong to, update status of tasks assigned to them.
-- **Project Management**: Create and manage projects with team collaboration.
-- **Task Tracking**: Kanban-style task board with status tracking (Todo, In Progress, Done).
-- **Dashboard**: Visual overview of total tasks, completed tasks, pending tasks, and overdue items.
-- **Responsive UI**: Modern, clean, and responsive design built with Tailwind CSS.
+This project follows the **Service-Controller-Route** pattern, a standard in industry-level Node.js applications.
 
-## ⚙️ Tech Stack
+### 📁 Folder Structure
 
-- **Frontend**: React, Vite, Tailwind CSS, Lucide Icons, Axios.
-- **Backend**: Node.js, Express, Mongoose, JWT, Express-Validator.
-- **Database**: MongoDB (Atlas or Local).
-- **Deployment**: Railway.
+```text
+kiet_task/
+├── client/                 # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── api/           # API service layer (Axios config + endpoints)
+│   │   ├── components/    # Reusable UI components
+│   │   ├── context/       # State management (AuthContext)
+│   │   ├── pages/         # Page components
+│   │   ├── App.jsx        # Routing and Protected Routes
+│   │   └── main.jsx
+├── server/                 # Backend (Node + Express)
+│   ├── src/
+│   │   ├── config/        # Database and env configurations
+│   │   ├── controllers/   # Request/Response handling ONLY
+│   │   ├── middleware/    # Auth, Error handling, Async wrappers
+│   │   ├── models/        # Database schemas (Mongoose)
+│   │   ├── routes/        # REST API route definitions
+│   │   ├── services/      # Business logic and DB operations
+│   │   ├── validations/   # Data validation (express-validator)
+│   │   ├── app.js         # Express app configuration
+│   │   └── server.js      # Server entry point (PORT listener)
+└── package.json            # Root scripts for build/dev
+```
+
+## 🛠️ Key Refactorings (Backend)
+
+### 1. Separation of Concerns
+- **Controllers**: Now only handle `req` and `res`. They don't know about the database.
+- **Services**: Contain all business logic. This makes them reusable and easier to test.
+
+### 2. Centralized Validations
+- Used `express-validator` to create a dedicated `validations/` folder. Routes are protected by these validation middlewares before reaching the controller.
+
+### 3. Scalable Server Setup
+- Split `app.js` and `server.js`. This is crucial for **Unit Testing** (allowing you to test the app without starting a real server).
+
+### 4. Robust Error Handling
+- **Async Wrapper**: A centralized `asyncHandler` removes the need for `try-catch` blocks in every controller, making the code much cleaner.
+- **Global Error Middleware**: Handles all errors in one place, ensuring consistent API responses.
+
+## 💻 Example Code Snippets
+
+### Route (`routes/projectRoutes.js`)
+```javascript
+router.post('/', protect, admin, validateProject, createProject);
+```
+
+### Controller (`controllers/projectController.js`)
+```javascript
+const createProject = asyncHandler(async (req, res) => {
+  const project = await projectService.createProject(req.body, req.user._id);
+  res.status(201).json(project);
+});
+```
+
+### Service (`services/projectService.js`)
+```javascript
+const createProject = async (projectData, adminId) => {
+  const { name, description, members } = projectData;
+  return await Project.create({
+    name,
+    description,
+    admin: adminId,
+    members: members || [],
+  });
+};
+```
+
+## 🌟 Why this structure is better for interviews?
+
+1. **Scalability**: New features can be added by simply creating a new Service and Controller without cluttering existing files.
+2. **Maintainability**: Logic is decoupled. If you change the database from MongoDB to PostgreSQL, you only change the Services, not the Controllers or Routes.
+3. **Testability**: Because business logic is isolated in Services, you can write unit tests for it very easily.
+4. **Professionalism**: It demonstrates that you understand how real-world enterprise applications are structured beyond simple MVC.
 
 ## 📦 Getting Started
 
-### Prerequisites
-
-- Node.js installed
-- MongoDB instance (Local or Atlas)
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/kiet_task.git
-   cd kiet_task
-   ```
-
-2. Install dependencies for both client and server:
-   ```bash
-   npm run install-all
-   ```
-
-3. Create a `.env` file in the `server` directory and add the following:
-   ```env
-   PORT=5000
-   NODE_ENV=development
-   MONGO_URI=your_mongodb_uri
-   JWT_SECRET=your_jwt_secret
-   ```
-
-### Running the App
-
-- Run both client and server in development mode:
-  ```bash
-  npm run dev
-  ```
-- The frontend will run on `http://localhost:5173` and the backend on `http://localhost:5000`.
+1. Clone the repo and run `npm run install-all`.
+2. Set up your `.env` in the `server` folder.
+3. Run `npm run dev` to start both client and server.
 
 ## 🌐 Deployment
 
-This app is optimized for deployment on **Railway**.
-
-1. Connect your GitHub repository to Railway.
-2. Railway will automatically detect the root `package.json` and run the `build` and `start` scripts.
-3. Ensure you add the necessary Environment Variables (`MONGO_URI`, `JWT_SECRET`, `NODE_ENV=production`) in the Railway dashboard.
-
-## 📝 License
-
-This project is licensed under the ISC License.
+Ready for one-click deployment on **Railway**.
